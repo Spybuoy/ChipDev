@@ -9,8 +9,14 @@ module model #(parameter
   output logic [DATA_WIDTH-1:0] dout2,
   output logic [DATA_WIDTH-1:0] dout3
 );
+/*
+Based on addr, assign din to doutx. 
+Make sure you know what happens to rest dout's (i.e, '0)
+Otherwise if din_en is 0 then all dout's are '0
+Watchout for DATA_WIDTH changes in interview
+*/
 always@(*) begin
-    if(din_en) begin
+    if(din_en) begin 
       case(addr)
       2'd0: begin dout0 = din; {dout1,dout2,dout3} = '0; end
       2'd1: begin dout1 = din; {dout0,dout2,dout3} = '0; end
