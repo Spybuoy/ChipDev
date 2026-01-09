@@ -1,28 +1,39 @@
-module model #(parameter
-  DATA_WIDTH = 16,
-  MAX = 99
+module model #(
+    parameter DATA_WIDTH = 16,
+    MAX = 99
 ) (
     input clk,
-    input reset, start, stop,
+    input reset,
+    start,
+    stop,
     output logic [DATA_WIDTH-1:0] count
 );
+  logic increment;
 
-logic [DATA_WIDTH-1:0] temp;
-logic incr;
+  always @(posedge clk) begin
 
-always@(posedge clk) begin
+    if (reset) begin
+      increment = 0;
+      count <= '0;
+    end else begin
 
-  if(reset) begin // increment and counter both 0 at reset
-    // increment should remain 1 even if count reaches MAX
-    // hence (temp==MAX) is excluded from this block
-    temp<=0; incr <= 0; 
+      if (start) begin
+        increment = 1'b1;
+      end
+
+      if (stop) begin
+        increment = 1'b0;
+      end
+
+      if (increment) begin
+        count <= (count == MAX) ? '0 : (count + 1'b1);
+      end else begin
+        count <= count;
+      end
+
+    end
+
+
   end
-  else begin
-    // at stop, you avoid increment, temp<=temp increases drivers 
-    if(stop) begin incr<=0; end
-    // if start or incr (remains 1 once started) incr count and check for MAX
-    else if(start || incr) begin incr<=1; temp<=(temp==MAX)?0:temp+1'b1; end
-  end
-end
-assign count = temp;
+
 endmodule
